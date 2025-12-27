@@ -8,7 +8,7 @@ const edit = async ({params}) => {
   return (
     <div>
       <div className='text-2xl text-center'>Edit Application</div>
-      <Form app/>
+      <Form app={app}/>
     </div>
   )
 }

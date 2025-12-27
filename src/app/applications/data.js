@@ -7,7 +7,13 @@ const data = [
     description: "Technical interview scheduled.",
     status: "interview",
     fromStatus: null,
-    appliedAt: new Date("2025-12-14"), // last week
+    interview: {
+      date: new Date("2025-12-24T23:00:00"),
+      round: "Technical",
+      mode: "Online",
+      notes: ""
+    },
+    appliedAt: new Date("2025-12-14"),
     updatedAt: new Date("2025-12-17")
   },
   {
@@ -18,7 +24,7 @@ const data = [
     description: "Rejected after online assessment.",
     status: "rejected",
     fromStatus: "applied",
-    appliedAt: new Date("2025-11-28"), // last month
+    appliedAt: new Date("2025-11-28"),
     updatedAt: new Date("2025-12-02")
   },
   {
@@ -29,7 +35,7 @@ const data = [
     description: "Interview feedback was mixed.",
     status: "rejected",
     fromStatus: "interview",
-    appliedAt: new Date("2025-11-28"), // older month
+    appliedAt: new Date("2025-11-28"),
     updatedAt: new Date("2025-09-20")
   },
   {
@@ -39,8 +45,13 @@ const data = [
     title: "Backend Engineer",
     description: "Offer received. Negotiation pending.",
     status: "offer",
-    fromStatus: null,
-    appliedAt: new Date("2025-06-05"), // within year
+    fromStatus: "interview",
+    offer: {
+      decision: "pending", 
+      decidedAt: null,
+      notes: ""
+    },
+    appliedAt: new Date("2025-06-05"),
     updatedAt: new Date("2025-06-18")
   },
   {
@@ -51,7 +62,7 @@ const data = [
     description: "Resume under review.",
     status: "applied",
     fromStatus: null,
-    appliedAt: new Date("2025-12-18"), // this week
+    appliedAt: new Date("2025-12-18"),
     updatedAt: new Date("2025-12-18")
   },
   {
@@ -62,7 +73,7 @@ const data = [
     description: "Rejected during resume screening.",
     status: "rejected",
     fromStatus: "applied",
-    appliedAt: new Date("2025-03-15"), // earlier this year
+    appliedAt: new Date("2025-03-15"),
     updatedAt: new Date("2025-03-22")
   },
   {
@@ -73,7 +84,13 @@ const data = [
     description: "Onsite interview next week.",
     status: "interview",
     fromStatus: null,
-    appliedAt: new Date("2025-12-05"), // last month
+    interview: {
+      date: new Date("2025-12-19T14:00:00"),
+      round: "Onsite",
+      mode: "Onsite",
+      notes: "System design + behavioral rounds"
+    },
+    appliedAt: new Date("2025-12-05"),
     updatedAt: new Date("2025-12-12")
   },
   {
@@ -84,7 +101,7 @@ const data = [
     description: "Early-stage startup, first call pending.",
     status: "applied",
     fromStatus: null,
-    appliedAt: new Date("2025-12-20"), // today
+    appliedAt: new Date("2025-12-20"),
     updatedAt: new Date("2025-12-20")
   }
 ];
