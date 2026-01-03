@@ -1,14 +1,16 @@
 "use client";
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 const Form = ({ app }) => {
     const router = useRouter();
     const [form, setForm] = useState({
         company: app?.company ?? "",
         title: app?.title ?? "",
-        desc: app?.description ?? "",
-        status: app?.status ?? "",
+        description: app?.description ?? "",
+        status: app?.status ?? "applied",
         interview: app?.interview ?? null,
         offer: app?.offer ?? null
     })
@@ -37,7 +39,7 @@ const Form = ({ app }) => {
                             prev.interview ?? {
                                 date: "",
                                 round: "",
-                                mode: "online",
+                                mode: "Online",
                                 notes: "",
                             },
                     };
@@ -80,13 +82,34 @@ const Form = ({ app }) => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        //add logic needed,send the data to backend and add create an api endpoint
 
-        router.push("/applications");
-
+        try {
+            const payload = {
+                ...form,
+                interview: form.interview
+                    ? {
+                        ...form.interview,
+                        date: new Date(form.interview.date || Date.now()),
+                    }
+                    : undefined,
+                offer: form.offer
+                    ? {
+                        ...form.offer,
+                        decidedAt: new Date(),
+                    }
+                    : undefined,
+            };
+            if(app?._id)
+                { await axios.patch(`/api/applications/${app._id}`, payload); toast.success("Updated Successfully")}
+            else{ await axios.post(`/api/applications`, payload); toast.success("Saved successfully");}
+            router.push("/applications");
+        } catch (err) {
+            console.error(err);
+        }
     };
+
     return (
         <form
             onSubmit={handleSubmit}
@@ -120,8 +143,8 @@ const Form = ({ app }) => {
             <div>
                 <label className="block text-sm font-medium">Description</label>
                 <textarea
-                    name="desc"
-                    value={form.desc}
+                    name="description"
+                    value={form.description}
                     onChange={handleChange}
                     className="w-full border rounded px-3 py-2"
                     rows={3}
@@ -176,8 +199,8 @@ const Form = ({ app }) => {
                             onChange={handleInterviewChange}
                             className="w-full border rounded px-3 py-2"
                         >
-                            <option value="online">Online</option>
-                            <option value="onsite">Onsite</option>
+                            <option value="Online">Online</option>
+                            <option value="Onsite">Onsite</option>
                         </select>
                     </div>
 

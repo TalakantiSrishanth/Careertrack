@@ -8,7 +8,7 @@ const data = [
     status: "interview",
     fromStatus: null,
     interview: {
-      date: new Date("2025-12-24T23:00:00"),
+      date: new Date("2026-01-01T15:00:00"),
       round: "Technical",
       mode: "Online",
       notes: ""
