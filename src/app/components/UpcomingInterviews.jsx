@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Fragment } from "react";
 
 const UpcomingInterviews = ({ data }) => {
@@ -47,7 +48,7 @@ const UpcomingInterviews = ({ data }) => {
 
               return (
                 <Fragment key={app._id}>
-                  <div className="flex items-start rounded-xl border bg-white p-4 shadow-sm">
+                  <div className="flex items-start justify-between rounded-xl border bg-white p-4 shadow-sm">
                     <div className="space-y-1">
                       <h3 className="text-sm font-semibold text-gray-900">
                         {app.company}
@@ -64,6 +65,7 @@ const UpcomingInterviews = ({ data }) => {
                         {detailText}
                       </p>
                     </div>
+                   <Link href={`/interviewPrep/${app._id}`}><button>Prepare</button></Link> 
                   </div>
                 </Fragment>
               );

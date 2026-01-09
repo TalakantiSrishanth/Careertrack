@@ -1,5 +1,5 @@
 import Link from "next/link";
-
+import { UserButton } from "@clerk/nextjs";
 const Navbar = () => {
   return (
     <nav className="flex items-center p-5 bg-gray-200">
@@ -11,6 +11,7 @@ const Navbar = () => {
         <Link href="/applications">Applications</Link>
         <Link href="/analytics">Analytics</Link>
         <Link href="/atscheck">ATS Check</Link>
+         <UserButton />
       </div>
     </nav>
   );

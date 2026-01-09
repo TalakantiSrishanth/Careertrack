@@ -2,7 +2,6 @@
 import axios from "axios";
 import React, { useState } from "react";
 import AtsResults from "./AtsResults";
-
 const Page = () => {
   const [jd, setJd] = useState("");
   const [isWordLimitExceeded, setIsWordLimitExceeded] = useState(false);

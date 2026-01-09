@@ -1,11 +1,16 @@
-import axios from "axios";
+import { auth } from "@clerk/nextjs/server";
+import { connectDB } from "@/lib/mongodb";
+import Application from "@/models/Application";
 import ApplicationCard from "../../components/ApplicationCard"
 import Link from "next/link";
 const Interview = async () => {
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/applications`);
-    const data = res.data;
+     const { userId } = await auth();
+          if (!userId) {
+            throw new Error("Unauthorized");
+          }
+          await connectDB();
+          const data = await Application.find({ userId });
     const interviewData = data.filter((item) => item.status === "interview");
-
     return (
         <div className='grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-4 sm:gap-2 gap-1 p-3 bg-gray-100 min-h-full items-start'>
             {interviewData.map((app) => {
@@ -41,7 +46,7 @@ const Interview = async () => {
                 return (
                     <ApplicationCard key={app._id} company={app.company} title={app.title} statusText={statusText} detailText={detailText}>
                         <div className='flex gap-3'>
-                            <button>Prepare</button>
+                            <Link href={`/interviewPrep/${app._id}`}><button>Prepare</button></Link>
                              <Link href={`/applications/${app._id}/edit`}>
                             <button>
                                 Edit

@@ -1,13 +1,17 @@
 import { connectDB } from "@/lib/mongodb";
 import Application from "@/models/Application";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 export async function PATCH(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json();
-
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     await connectDB();  
-    const existing = await Application.findById(id);
+    const existing = await Application.findOne({userId:userId,_id:id});
     if (!existing) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -49,7 +53,7 @@ export async function PATCH(request, { params }) {
         ...body.offer,
       };
     }
-    await Application.findByIdAndUpdate(id, update);
+    await Application.updateOne({ _id: id, userId }, update);
 
     return NextResponse.json({ success: true });
   } catch (err) {
@@ -63,8 +67,18 @@ export async function PATCH(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     await connectDB();
-    await Application.findByIdAndDelete(id);
+    const deleted = await Application.findOneAndDelete({
+      _id: id,
+      userId,
+    });
+    if (!deleted) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
     return NextResponse.json({ success: true });
   }
   catch (err) {

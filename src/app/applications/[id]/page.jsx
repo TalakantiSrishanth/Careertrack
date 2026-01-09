@@ -1,10 +1,16 @@
-import axios from "axios";
+import { connectDB } from "@/lib/mongodb";
+import { auth } from "@clerk/nextjs/server";
+import Application from "@/models/Application";
 import Delete from "../../components/Delete.jsx";
 import Link from "next/link";   
 const Page = async ({ params }) => {
   const { id } = await params;
-  const res=await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/applications`,{params:{id:id}});
-  const app=res.data;
+ const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+  await connectDB();
+  const app = await Application.findOne({ userId, _id: id });
   if (!app) {
     return <div>Application not found</div>;
   }

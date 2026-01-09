@@ -1,32 +1,16 @@
 import { connectDB } from "@/lib/mongodb";
 import Application from "@/models/Application";
 import { NextResponse } from "next/server";
-export async function GET(request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const id = searchParams.get("id");
-        await connectDB();
-        if (id) {
-            const application = await Application.findById(id);
-            if (application) return NextResponse.json(application);
-            else return NextResponse.json({ message: "Application doesnt exisit" }, { status: 404 });
-        }
-        const applications = await Application.find();
-        return NextResponse.json(applications);
-    }
-    catch (error) {
-        return NextResponse.json(
-            { message: "Server error", error: error.message },
-            { status: 500 }
-        );
-    }
-}
+import { auth } from '@clerk/nextjs/server'
+
 export async function POST(request) {
     try {
+        const {userId}=await auth();
+        if(!userId) return NextResponse.json({error:"UnAuthenticated"},{status:401});
         await connectDB();
         const body = await request.json();
 
-        const application = await Application.create(body);
+        const application = await Application.create({...body,userId:userId});
 
         return NextResponse.json({success:true});
     }  catch (error) {

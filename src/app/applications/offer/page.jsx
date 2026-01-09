@@ -1,11 +1,17 @@
-import axios from "axios"
+import { connectDB } from "@/lib/mongodb";
+import { auth } from "@clerk/nextjs/server";
+import Application from "@/models/Application";
 import OfferHelper from "./OfferHelper";
 
-const page =async () => {
-  const {data}=await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/applications`);
-  return (
-   <OfferHelper data={data}/>
-  )
-}
+export default async function Page() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
 
-export default page
+  await connectDB();
+
+  const data = await Application.find({ userId }).lean();
+
+  const plainData = JSON.parse(JSON.stringify(data));
+
+  return <OfferHelper data={plainData} />;
+}

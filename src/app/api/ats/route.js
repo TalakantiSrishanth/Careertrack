@@ -1,8 +1,13 @@
 import ATSSchema from "@/app/atscheck/models/AtsSchema";
+import { auth } from '@clerk/nextjs/server'
 import { GoogleGenAI } from '@google/genai';
 import { NextResponse } from "next/server";
 export async function POST(request) {
     try {
+        const {userId}=await auth();
+            if (!userId) {
+            return NextResponse.json({error:"UnAuthenticated"},{status:404});
+          }
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const { resumeText, jobDescription, type } = await request.json();
         const prompt = `

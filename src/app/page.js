@@ -1,21 +1,16 @@
-import axios from "axios";
+import { auth } from "@clerk/nextjs/server";
+import { connectDB } from "@/lib/mongodb";
+import Application from "@/models/Application";
 import HomeComponent from "./HomeComponent";
-const page = async () => {
-  try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/applications`
-    );
 
-    return <HomeComponent data={res.data} />;
-  } catch (error) {
-    console.error(error);
+export default async function Page() {
+  const { userId } = await auth();
 
-    return (
-      <div className="p-4 text-red-500">
-        Failed to load applications
-      </div>
-    );
+  if (!userId) {
+    throw new Error("Unauthorized");
   }
-};
 
-export default page;
+  await connectDB();
+  const applications = await Application.find({ userId }).lean();
+  return <HomeComponent data={applications || []} />;
+}

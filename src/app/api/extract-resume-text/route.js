@@ -1,16 +1,21 @@
 import pdf from '@cedrugs/pdf-parse';
+import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server';
 export async function POST(req) {
+    const {userId}=await auth();
+    if (!userId) {
+    return NextResponse.json({error:"UnAuthenticated"},{status:401});
+  }
     const formData = await req.formData();
     const file = formData.get("resume");
-    console.log("File type:", file.type);
+   
     if (!file) {
         return NextResponse.json(
             { error: "No file uploaded" },
             { status: 400 }
         );
     }
-
+    console.log("File type:", file.type);
     const allowedTypes = ["application/pdf", "text/plain"];
     if (!allowedTypes.includes(file.type)) {
         return NextResponse.json(
