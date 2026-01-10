@@ -1,4 +1,4 @@
-import AIPrepGate from "./AIPrepGate.jsx";
+import AIPrepGate from "./AIPrepGate";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Calendar, Clock } from "lucide-react";
 
