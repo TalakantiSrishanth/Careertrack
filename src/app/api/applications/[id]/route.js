@@ -81,3 +81,27 @@ export async function PATCH(request, { params }) {
     );
   }
 }
+export async function DELETE(request, { params }) {
+  try {
+    const { id } = await params;
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    await connectDB();
+    const deleted = await Application.findOneAndDelete({
+      _id: id,
+      userId,
+    });
+    if (!deleted) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    return NextResponse.json({ success: true });
+  }
+  catch (err) {
+    console.log(err.message);
+    return NextResponse.json({ error: `Error Occured ${err.message}` }, {
+      status: 500
+    })
+  }
+}
