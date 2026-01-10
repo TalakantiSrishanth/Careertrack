@@ -1,6 +1,8 @@
-import AIPrepGate from "./AiPrepGate";
+import AIPrepGate from "./AIPrepGate";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Calendar, Clock } from "lucide-react";
 
-const InterviewMain = ({ app }) => {
+export default function InterviewMain({ app }) {
   if (!app?.interview?.date) return null;
 
   const interviewDateObj = new Date(app.interview.date);
@@ -17,42 +19,47 @@ const InterviewMain = ({ app }) => {
   });
 
   const remainingDays = Math.ceil(
-    (interviewDateObj.getTime() - Date.now()) /
-      (1000 * 60 * 60 * 24)
+    (interviewDateObj.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
   );
 
   return (
-    <div className="bg-gray-50 p-6 rounded-xl border shadow-sm space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">
-          📅 Interview Details
-        </h1>
-        <p className="text-sm text-gray-500">
-          Upcoming interview schedule & AI preparation checklist
-        </p>
-      </div>
-      <div className="bg-white p-5 rounded-lg shadow-sm border">
-        <h2 className="text-xl font-semibold text-gray-800">
-          {app.company} — {app.title}
-        </h2>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>📅 Interview Details</CardTitle>
+          <CardDescription>
+            Upcoming interview schedule & AI preparation checklist
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-lg font-semibold">
+            {app.company} — {app.title}
+          </p>
 
-        <p className="text-gray-600 mt-1">
-          {interviewDate} at {interviewTime} •{" "}
-          <span className="capitalize">{app.interview.mode}</span>
-        </p>
+          <div className="flex items-center gap-2 text-gray-700">
+            <Calendar className="h-4 w-4" />
+            {interviewDate} at {interviewTime} •{" "}
+            <span className="capitalize">{app.interview.mode}</span>
+          </div>
 
-        <p className="mt-2 text-blue-700 font-medium">
-          ⏳ In {remainingDays <= 0 ? "0" : remainingDays} day
-          {remainingDays !== 1 ? "s" : ""}
-        </p>
-      </div>
-      <div className="bg-white p-5 rounded-lg border shadow-sm">
-        <h3 className="font-semibold text-gray-800 mb-1">Job Description</h3>
-        <p className="text-gray-600 text-sm">{app.description}</p>
-      </div>
+          <div className="flex items-center gap-2 text-blue-700 font-medium">
+            <Clock className="h-4 w-4" />
+            In {remainingDays <= 0 ? "0" : remainingDays} day
+            {remainingDays !== 1 ? "s" : ""}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Job Description</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-700 text-sm">{app.description}</p>
+        </CardContent>
+      </Card>
+
       <AIPrepGate app={app} />
     </div>
   );
-};
-
-export default InterviewMain;
+}

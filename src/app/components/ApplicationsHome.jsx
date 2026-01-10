@@ -6,9 +6,10 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { closestCorners, DndContext } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { DragOverlay } from "@dnd-kit/core";
-import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { Plus } from "lucide-react";
 
 const ApplicationsHome = ({ data }) => {
   const status = ["applied", "rejected", "interview", "offer"];
@@ -25,8 +26,8 @@ const ApplicationsHome = ({ data }) => {
   const UpdateStatus = async (id, toStatus) => {
     try {
       await axios.patch(`/api/applications/${id}`, { status: toStatus });
-    } catch (e) {
-      console.log("Error occurred", e.message);
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to update status");
     }
   };
 
@@ -40,12 +41,8 @@ const ApplicationsHome = ({ data }) => {
 
     setColumns((prev) => {
       if (fromStatus === toStatus) {
-        const oldIndex = prev[fromStatus].findIndex(
-          (item) => item._id === active.id
-        );
-        const newIndex = prev[toStatus].findIndex(
-          (item) => item._id === over.id
-        );
+        const oldIndex = prev[fromStatus].findIndex((i) => i._id === active.id);
+        const newIndex = prev[toStatus].findIndex((i) => i._id === over.id);
 
         return {
           ...prev,
@@ -53,15 +50,11 @@ const ApplicationsHome = ({ data }) => {
         };
       }
 
-      const movedItem = prev[fromStatus].find(
-        (item) => item._id === active.id
-      );
+      const movedItem = prev[fromStatus].find((i) => i._id === active.id);
 
       return {
         ...prev,
-        [fromStatus]: prev[fromStatus].filter(
-          (item) => item._id !== active.id
-        ),
+        [fromStatus]: prev[fromStatus].filter((i) => i._id !== active.id),
         [toStatus]: [...prev[toStatus], { ...movedItem, status: toStatus }],
       };
     });
@@ -73,21 +66,17 @@ const ApplicationsHome = ({ data }) => {
     setActiveCard(active);
   };
 
-  const findCardById = (id, status) => {
-    return columns[status]?.find((item) => item._id === id);
-  };
+  const findCardById = (id, status) =>
+    columns[status]?.find((item) => item._id === id);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Applications
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Applications</h1>
 
         <Link href="/applications/add">
           <button className="flex items-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-50 transition">
-            <Image src="/addButton.svg" width={18} height={18} alt="Add" />
-            Add Application
+            <Plus size={18} /> Add Application
           </button>
         </Link>
       </div>
@@ -113,15 +102,12 @@ const ApplicationsHome = ({ data }) => {
         </div>
 
         <DragOverlay>
-          {activeCard ? (
+          {activeCard && (
             <Card
-              app={findCardById(
-                activeCard.id,
-                activeCard.data.current.status
-              )}
+              app={findCardById(activeCard.id, activeCard.data.current.status)}
               dragging
             />
-          ) : null}
+          )}
         </DragOverlay>
       </DndContext>
     </div>

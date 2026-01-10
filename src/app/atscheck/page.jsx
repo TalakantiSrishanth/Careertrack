@@ -2,6 +2,10 @@
 import axios from "axios";
 import React, { useState } from "react";
 import AtsResults from "./AtsResults";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { UploadCloud, FileText, Loader2 } from "lucide-react";
+
 const Page = () => {
   const [jd, setJd] = useState("");
   const [isWordLimitExceeded, setIsWordLimitExceeded] = useState(false);
@@ -18,10 +22,7 @@ const Page = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!resumetext.trim()) {
-      alert("Paste resume text first");
-      return;
-    }
+    if (!resumetext.trim()) return;
 
     try {
       setLoading(true);
@@ -31,8 +32,6 @@ const Page = () => {
         type: "internship",
       });
       setAtsData(data);
-    } catch (e) {
-      console.error(e);
     } finally {
       setLoading(false);
     }
@@ -47,13 +46,8 @@ const Page = () => {
 
     try {
       setUploading(true);
-      const { data } = await axios.post(
-        "/api/extract-resume-text",
-        formData
-      );
+      const { data } = await axios.post("/api/extract-resume-text", formData);
       setResumeText(data.resumeText);
-    } catch {
-      alert("Failed to extract resume text");
     } finally {
       setUploading(false);
     }
@@ -63,73 +57,81 @@ const Page = () => {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-5xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            ATS Resume Checker
-          </h1>
-          <p className="text-sm text-gray-500">
-            Analyze how well your resume matches a job description
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">ATS Resume Checker</h1>
+          <p className="text-sm text-gray-500">Analyze how well your resume matches a job description</p>
         </div>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-white p-5 rounded-xl border shadow-sm space-y-3">
-            <h2 className="text-sm font-semibold">Job Description</h2>
-            <textarea
-              placeholder="Paste job description here…"
-              onChange={handleJd}
-              value={jd}
-              rows={10}
-              className="w-full border rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {isWordLimitExceeded && (
-              <p className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 p-2 rounded">
-                Long job descriptions may reduce ATS accuracy.  
-                Remove legal or company policy sections if possible.
-              </p>
-            )}
-          </div>
-          <div className="bg-white p-5 rounded-xl border shadow-sm space-y-4">
-            <h2 className="text-sm font-semibold">Resume</h2>
 
-            <textarea
-              placeholder="Paste your resume text here…"
-              onChange={(e) => setResumeText(e.target.value)}
-              value={resumetext}
-              rows={7}
-              className="w-full border rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <div className="border border-dashed rounded-lg p-4 text-center bg-gray-50">
-              <label className="cursor-pointer text-sm font-medium text-blue-600 hover:underline">
-                {uploading ? "Extracting resume…" : "Upload resume file (PDF / TXT)"}
-                <input
-                  type="file"
-                  accept=".pdf,.txt"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <h2 className="text-sm font-semibold">Job Description</h2>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <textarea
+                placeholder="Paste job description…"
+                onChange={handleJd}
+                value={jd}
+                rows={10}
+                className="w-full border rounded-lg p-3 text-sm resize-none focus:ring-2 focus:ring-blue-500"
+              />
+              {isWordLimitExceeded && (
+                <p className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 p-2 rounded">
+                  Long job descriptions may reduce ATS accuracy.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <h2 className="text-sm font-semibold">Resume</h2>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <textarea
+                placeholder="Paste your resume text…"
+                onChange={(e) => setResumeText(e.target.value)}
+                value={resumetext}
+                rows={7}
+                className="w-full border rounded-lg p-3 text-sm resize-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              <label className="flex flex-col items-center border border-dashed rounded-lg p-4 bg-gray-50 cursor-pointer">
+                <UploadCloud className="text-blue-600 mb-2" />
+                <span className="text-sm text-blue-600">
+                  {uploading ? "Extracting…" : "Upload resume file (PDF / TXT)"}
+                </span>
+                <input type="file" accept=".pdf,.txt" onChange={handleFileUpload} className="hidden" />
+                <p className="text-xs text-gray-400 mt-1">
+                  We’ll automatically extract the text
+                </p>
               </label>
-              <p className="text-xs text-gray-400 mt-1">
-                We’ll automatically extract the text for you
-              </p>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
+
         <div className="flex justify-end">
-          <button
+          <Button
             onClick={handleAnalyze}
             disabled={loading || uploading}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
+            className="px-6 py-2"
           >
-            {loading
-              ? "Analyzing…"
-              : uploading
-              ? "Processing file…"
-              : "Analyze Resume"}
-          </button>
+            {loading ? (
+              <Loader2 className="animate-spin" size={18} />
+            ) : (
+              <FileText size={18} />
+            )}
+            <span className="ml-2">
+              {loading ? "Analyzing…" : uploading ? "Processing…" : "Analyze Resume"}
+            </span>
+          </Button>
         </div>
+
         {Object.keys(atsdata).length > 0 && (
-          <div className="bg-white p-6 rounded-xl border shadow-sm">
-            <AtsResults analysis={atsdata} />
-          </div>
+          <Card>
+            <CardContent className="p-6">
+              <AtsResults analysis={atsdata} />
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

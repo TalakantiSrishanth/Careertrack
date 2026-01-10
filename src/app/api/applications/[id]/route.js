@@ -6,21 +6,39 @@ export async function PATCH(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+  const ALLOWED_STATUS_FLOW = {
+  applied: ["interview", "rejected","offer"],
+  interview: ["offer", "rejected"],
+  offer: ["rejected"],
+  rejected: [] 
+};
+
     await connectDB();  
     const existing = await Application.findOne({userId:userId,_id:id});
     if (!existing) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+    
     const update = { $set: {} };
     if (body.company !== undefined) update.$set.company = body.company;
     if (body.title !== undefined) update.$set.title = body.title;
     if (body.description !== undefined)
       update.$set.description = body.description;
     if (body.status && body.status !== existing.status) {
+      const allowed = ALLOWED_STATUS_FLOW[existing.status] || [];
+
+  if (!allowed.includes(body.status)) {
+    return NextResponse.json(
+      {
+        error: `Invalid status transition.Changes are not saved`
+      },
+      { status: 400 }
+    );
+  }
       update.$set.status = body.status;
       update.$set.fromStatus = existing.status;
       if (body.status === "interview" && !existing.interview) {
@@ -62,30 +80,4 @@ export async function PATCH(request, { params }) {
       { status: 500 }
     );
   }
-}
-
-export async function DELETE(request, { params }) {
-  try {
-    const { id } = await params;
-    const { userId } = auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    await connectDB();
-    const deleted = await Application.findOneAndDelete({
-      _id: id,
-      userId,
-    });
-    if (!deleted) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-    return NextResponse.json({ success: true });
-  }
-  catch (err) {
-    console.log(err.message);
-    return NextResponse.json({ error: `Error Occured ${err.message}` }, {
-      status: 500
-    })
-  }
-
 }

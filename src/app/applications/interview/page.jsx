@@ -11,6 +11,13 @@ const Interview = async () => {
           await connectDB();
           const data = await Application.find({ userId });
     const interviewData = data.filter((item) => item.status === "interview");
+      if (interviewData.length === 0) {
+    return (
+      <div className="p-6 text-center text-gray-500 bg-white rounded-xl border shadow-sm m-4">
+        No interviews scheduled
+      </div>
+    );
+  }
     return (
         <div className='grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-4 sm:gap-2 gap-1 p-3 bg-gray-100 min-h-full items-start'>
             {interviewData.map((app) => {
