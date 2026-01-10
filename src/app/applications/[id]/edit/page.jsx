@@ -1,4 +1,3 @@
-import React from 'react'
 import { connectDB } from "@/lib/mongodb";
 import { auth } from "@clerk/nextjs/server";
 import Application from "@/models/Application";
