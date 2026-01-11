@@ -10,11 +10,20 @@ import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Plus } from "lucide-react";
+import {TouchSensor, useSensor,useSensors,KeyboardSensor,MouseSensor} from '@dnd-kit/core';
 
 const ApplicationsHome = ({ data }) => {
   const status = ["applied", "rejected", "interview", "offer"];
   const [activeCard, setActiveCard] = useState(null);
-
+    const mouseSensor = useSensor(MouseSensor);
+  const touchSensor = useSensor(TouchSensor);
+  const keyboardSensor = useSensor(KeyboardSensor);
+  
+  const sensors = useSensors(
+    mouseSensor,
+    touchSensor,
+    keyboardSensor,
+  );
   const groupdata = () =>
     status.reduce((acc, s) => {
       acc[s] = data.filter((item) => item.status === s);
@@ -85,6 +94,7 @@ const ApplicationsHome = ({ data }) => {
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        sensors={sensors}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
           {status.map((s) => (
