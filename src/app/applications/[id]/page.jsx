@@ -53,7 +53,7 @@ const Page = async ({ params }) => {
             <Button>Edit</Button>
           </Link>
 
-          <Delete id={app._id} />
+          <Delete id={app._id.toString()} />
         </div>
 
       </CardContent>
